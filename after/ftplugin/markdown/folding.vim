@@ -141,10 +141,20 @@ if !exists('g:markdown_fold_override_foldtext')
   let g:markdown_fold_override_foldtext = 1
 endif
 
+function! FoldTextWorkaround()
+    let level = HeadingDepth(v:foldstart)
+    let indent = repeat('#', level)
+    let title = substitute(getline(v:foldstart), '^#\+\s*', '', '')
+    let foldsize = (v:foldend - v:foldstart)
+    let linecount = '['.foldsize.' line'.(foldsize>1?'s':'').']'
+    return indent.' '.title.' '.linecount
+endfunction
+
 setlocal foldmethod=expr
 
 if g:markdown_fold_override_foldtext
-  let &l:foldtext = s:SID() . 'FoldText()'
+  " let &l:foldtext = s:SID() . 'FoldText()'
+  setlocal foldtext=FoldTextWorkaround() 
 endif
 
 let &l:foldexpr =
